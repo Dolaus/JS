@@ -242,3 +242,49 @@ const student = new Student('Petro', '+380934251', 3)
 
 student.introduce()
 student.study()
+
+
+
+function PeopleOldStyle(name, phone) {
+    this._name = name;
+    this._phone = phone;
+}
+
+PeopleOldStyle.prototype.introduce = function () {
+    console.log(`Привіт, мене звати ${this._name}, мій номер ${this._phone}`)
+}
+
+
+function StudentOldStyle(name, phone, course) {
+    PeopleOldStyle.call(this, name, phone)
+    this._course = course;
+}
+
+StudentOldStyle.prototype = Object.create(PeopleOldStyle.prototype);
+StudentOldStyle.prototype.constructor = PeopleOldStyle;
+
+StudentOldStyle.prototype.study = function () {
+    console.log(`Я навчаюся на ${this._course} курсі.`)
+}
+
+
+function TeacherOldStyle(name, phone, subject) {
+    PeopleOldStyle.call(this, name, phone)
+    this._subject = subject;
+}
+
+TeacherOldStyle.prototype = Object.create(PeopleOldStyle.prototype);
+TeacherOldStyle.prototype.constructor = PeopleOldStyle;
+
+TeacherOldStyle.prototype.study = function () {
+    console.log(`Я викладаю ${this._subject}`)
+}
+
+const studentOldStyle = new StudentOldStyle('Oleh', '+3801231', 4)
+studentOldStyle.study()
+studentOldStyle.introduce()
+
+
+const teacherOldStyle = new TeacherOldStyle('Bogdan', '+1241242', 'English')
+teacherOldStyle.study()
+teacherOldStyle.introduce()
