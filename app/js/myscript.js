@@ -17,9 +17,9 @@ while (i <= 10) {
 const array = [1, true, false, 10, 'qwe', 23, '0', 0, 23, true];
 
 console.log('----------')
-for (const arrayElement of array) {
-    console.log(typeof arrayElement)
-}
+array.forEach(function (value) {
+    console.log(typeof value)
+})
 
 console.log('----------')
 for (let j = 0; j < 10; j++) {
