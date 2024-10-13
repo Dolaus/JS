@@ -66,9 +66,8 @@ const obj = {
     }
 }
 
-obj.name = 'Petro' // або ось так
-obj.age = 20
-obj.getData();
+const newContext = { name: 'Ivan', age: 25 };
+obj.getData.apply(newContext);
 
 let newFuncWithContext = obj.getData.bind({name: "Petro", age: 21});
 
