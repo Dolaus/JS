@@ -60,6 +60,8 @@ window.addEventListener('scroll', async () => {
 })
 
 characterContainer.addEventListener('click', async (ev) => {
+    if (modal.style.display === 'block') return;
+
     if (ev.target.closest('.card')) {
         const clickedCard = ev.target.closest('.card');
         let id = clickedCard.getAttribute('data-id');
