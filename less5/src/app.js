@@ -4,8 +4,6 @@ import '../styles/style.css'
 import axios from "axios";
 
 const App = () => {
-    const [previousUrl, setPreviousUrl] = useState();
-    const [nextUrl, setNextUrl] = useState();
     const [persons, setPersons] = useState();
     const [info, setInfo] = useState();
     const [currentPage, setCurrentPage] = useState(1);
