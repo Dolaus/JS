@@ -1,0 +1,30 @@
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.left {
+    position: fixed;
+    width: 5.33%;
+    height: 100%;
+    background-color: #f0f0f0;
+    padding: 20px;
+    left: 0;
+}
+
+.center {
+    margin-left: 8.33%;
+    margin-right: 25%;
+    width: 34%;
+    background-color: #ffffff;
+    padding: 20px;
+}
+
+.right {
+    position: fixed;
+    width: 14%;
+    height: 100%;
+    background-color: #f0f0f0;
+    padding: 20px;
+    right: 0;
+}
