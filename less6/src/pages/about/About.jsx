@@ -1,10 +1,11 @@
 import React from 'react';
+import {Grid} from "@mui/material";
 
 const About = () => {
     return (
-        <div>
+        <Grid>
             <h1>About</h1>
-        </div>
+        </Grid>
     );
 };
 

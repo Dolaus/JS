@@ -31,29 +31,38 @@ function App() {
                     color: isDarkMode ? 'white' : 'black'
                 }}>
                     <Grid item xs={2}>
-                        <nav style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                            <Button  component={Link} to="/" sx={{ backgroundColor: isDarkMode ? '#3f51b5' : '#1976d2', color: 'white' }}>Home</Button>
-                            <Button  component={Link} to="/heroes" sx={{ backgroundColor: isDarkMode ? '#3f51b5' : '#1976d2', color: 'white' }}>Ricks</Button>
-                            <Button  component={Link} to="/about" sx={{ backgroundColor: isDarkMode ? '#3f51b5' : '#1976d2', color: 'white' }}>About</Button>
+                        <nav style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+                            <Button component={Link} to="/" sx={{
+                                backgroundColor: isDarkMode ? '#3f51b5' : '#1976d2',
+                                color: 'white'
+                            }}>Home</Button>
+                            <Button component={Link} to="/heroes" sx={{
+                                backgroundColor: isDarkMode ? '#3f51b5' : '#1976d2',
+                                color: 'white'
+                            }}>Ricks</Button>
+                            <Button component={Link} to="/about" sx={{
+                                backgroundColor: isDarkMode ? '#3f51b5' : '#1976d2',
+                                color: 'white'
+                            }}>About</Button>
                         </nav>
-                        <div style={{ marginTop: '20px' }}>
-                            <Switch checked={isDarkMode} onChange={toggleTheme} color="primary" />
+                        <div style={{marginTop: '20px'}}>
+                            <Switch checked={isDarkMode} onChange={toggleTheme} color="primary"/>
                         </div>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={10}>
                         <Routes>
-                            <Route path="/" element={<Home/>}/>
-                            <Route path="/heroes" element={<Heroes/>}/>
-                            <Route path="/about" element={<About/>}/>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/heroes" element={<Heroes />}>
+                                <Route path=":heroId" element={<CurrentHero />} />
+                            </Route>
+                            <Route path="/about" element={<About />} />
                         </Routes>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <CurrentHero/>
+
                     </Grid>
                 </Grid>
             </div>
         </HeroesContext.Provider>
-    );
+);
 }
 
 export default App;

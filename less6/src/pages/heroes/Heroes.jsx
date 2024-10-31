@@ -1,11 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react';
 import axios from "axios";
 import classes from './Heroes.module.css'
-import {Box, Button} from "@mui/material";
+import {Box, Button, Grid} from "@mui/material";
 import {DataGrid} from "@mui/x-data-grid";
 import {HeroesContext} from "../../context/HeroesContext";
 import HeroesService from "../../API/HeroesService";
+import {Outlet, useNavigate} from "react-router-dom";
 const Heroes = () => {
+    const navigate = useNavigate();
     const {heroesId, setHeroesId} = useContext(HeroesContext);
     const {isDarkMode, setIsDarkMode} = useContext(HeroesContext);
     const [persons, setPersons] = useState([]);
@@ -75,7 +77,7 @@ const Heroes = () => {
                         },
                     }}
                     pageSizeOptions={[10]}
-                    onRowClick={(params) => setHeroesId(params.id)}
+                    onRowClick={(params) => { setHeroesId(params.id); navigate(`/heroes/${params.id}`)}}
                 />
             </Box>
         );
@@ -83,19 +85,24 @@ const Heroes = () => {
 
 
     return (
-        <div>
+        <Grid container spacing={2}>
+            <Grid item xs={7}>
             <h1>Rick and Morty Characters</h1>
             {loading && <div className="loading" id="loading">Loading…</div>}
             {!loading && (
-                <div className={classes.containerHeroes} id="character-container">{renderCharacters()}</div>)
+                <Grid className={classes.containerHeroes} id="character-container">{renderCharacters()}</Grid>)
             }
-            <div className={classes.pagination}>
+            <Grid className={classes.pagination}>
                 <Button variant="contained" id="prev-btn" onClick={previousButtonHandler} disabled={info && info.prev === null}>Previous 20
                 </Button >
                 <span id="page-num">Page {currentPage}</span>
                 <Button variant="contained"  id="next-btn" onClick={nextButtonHandler} disabled={info && info.next === null}>Next 20</Button >
-            </div>
-        </div>
+            </Grid>
+            </Grid>
+            <Grid item xs={5}>
+            <Outlet/>
+            </Grid>
+        </Grid>
     );
 };
 
