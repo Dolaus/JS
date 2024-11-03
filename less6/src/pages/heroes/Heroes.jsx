@@ -6,6 +6,7 @@ import {DataGrid} from "@mui/x-data-grid";
 import {HeroesContext} from "../../context/HeroesContext";
 import HeroesService from "../../API/HeroesService";
 import {Outlet, useNavigate} from "react-router-dom";
+import {useRequest} from "ahooks";
 const Heroes = () => {
     const navigate = useNavigate();
     const {heroesId, setHeroesId} = useContext(HeroesContext);
@@ -15,14 +16,15 @@ const Heroes = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+
+    const {data} = useRequest( () => {
         HeroesService.getAllHeroes().then((res) => {
             const responseResults = res.data;
             setPersons(responseResults.results);
             setInfo(responseResults.info);
             setLoading(false);
         })
-    }, []);
+    });
 
     useEffect(() => {
         console.log(persons);
