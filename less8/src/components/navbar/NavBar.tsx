@@ -10,6 +10,8 @@ import {RootState} from "../../store/store";
 import {useNavigate} from "react-router-dom";
 import {useAppDispatch} from "../../hooks/hooks";
 import {removeAuthenticate, removeToken} from "../../store/slices/userSlice";
+import {setUrl} from "../../store/slices/exhibitSlice";
+import {urlToRout} from "../../utils/url";
 
 const NavBar = () => {
 
@@ -29,12 +31,22 @@ const NavBar = () => {
         navigate('login');
     }
 
+    const logoHandler = () => {
+        navigate('/')
+        dispatch(setUrl({url: urlToRout.EXHIBIT_URL}))
+    }
+
+    const myExhibitHandler = () => {
+        navigate('/')
+        dispatch(setUrl({url: urlToRout.MY_EXHIBIT_URL}))
+    }
+
     return (
         <AppBar position="static">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Typography
-                        onClick={() => navigate('/')}
+                        onClick={logoHandler}
                         variant="h6"
                         noWrap
                         component="a"
@@ -54,8 +66,12 @@ const NavBar = () => {
 
                     {isAuthenticated ?
                         <Box sx={{flexGrow: 1}}>
-                            <Button color="inherit">+</Button>
-                            <Button color="inherit">-</Button>
+                            <Button color="inherit"
+                                    onClick={() => navigate('/new-post')}
+                            >+</Button>
+                            <Button
+                                onClick={myExhibitHandler}
+                                color="inherit">My exhibits</Button>
                         </Box> : <Box sx={{flexGrow: 1}}> </Box>
                     }
 

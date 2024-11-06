@@ -10,8 +10,6 @@ interface PaginationFooterProps {
 
 const PaginationFooter: React.FC<PaginationFooterProps> = ({lastPage, currentPageHandler, currentPage}) => {
 
-    const [page, setPage] = React.useState(1);
-
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         currentPageHandler(value)
     };
