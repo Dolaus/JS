@@ -11,6 +11,7 @@ import {useAppDispatch} from "../hooks/hooks";
 import {fetchExhibits} from "../store/slices/exhibitSlice";
 import {deleteExhibition} from "../api/exhibitActions";
 import CommentPage from "./CommentPage";
+import {checkUser} from "../store/slices/userSlice";
 
 interface IUser {
     id: number;
@@ -30,13 +31,13 @@ const HomePage = () => {
     const dispatch = useAppDispatch();
     const exhibitsArray = useSelector((state: RootState) => state.exhibit.exhibitions);
     const totalPageFromExhibitSlice = useSelector((state: RootState) => state.exhibit.totalPage);
+    const currentUser = useSelector((state: RootState) => state.user.username);
     const url = useSelector((state: RootState) => state.exhibit.url);
 
     const staticUrl = 'http://ec2-13-49-67-34.eu-north-1.compute.amazonaws.com';
     const [exhibitions, setExhibitions] = useState([]);
     const [totalPage, setTotalPage] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const [currentUser, setCurrentUser] = useState({username: ''});
     const [selectedExhibitId, setSelectedExhibitId] = useState<number | null>(null);
 
     const setCurrentPageHandler = (currentPage: number) => {
@@ -44,15 +45,15 @@ const HomePage = () => {
     }
 
     useEffect(() => {
+        dispatch(checkUser());
+    }, []);
+
+    useEffect(() => {
         setSelectedExhibitId(null);
-        const fetchCurrentUser = async () => await getUserInformation();
         dispatch(fetchExhibits({currentPage: 1, url: url}));
 
         setExhibitions(exhibitsArray)
         setCurrentPage(1)
-        fetchCurrentUser().then(r => {
-            setCurrentUser(r.data);
-        });
     }, [url]);
 
     useEffect(() => {
@@ -76,7 +77,7 @@ const HomePage = () => {
     };
 
     return (
-        <Box sx={{flexGrow: 1, px: 2}}>
+        <Box sx={{flexGrow: 1}}>
             <Grid container spacing={2} sx={{px: 10, py: 1}}>
                 {exhibitions.length > 0 ? (
                     exhibitions.map((exhibition: IExhibition, index: number) => (
@@ -103,10 +104,11 @@ const HomePage = () => {
                                     <Button onClick={() => toggleComments(exhibition.id)}>
                                         Comments
                                     </Button>
-                                    {currentUser.username === exhibition.user.username ? <Button onClick={() => deleteExhibitHandler(exhibition.id)}>
+                                    {currentUser === exhibition.user.username ?
+                                        <Button onClick={() => deleteExhibitHandler(exhibition.id)}>
 
-                                    Delete
-                                    </Button> : ""}
+                                            Delete
+                                        </Button> : ""}
                                 </CardContent>
                                 {selectedExhibitId === exhibition.id && <CommentPage id={exhibition.id}/>}
 
@@ -117,8 +119,8 @@ const HomePage = () => {
                     <p>No exhibitions found</p>
                 )}
             </Grid>
-            { totalPage > 1 ? <PaginationFooter lastPage={totalPage} currentPageHandler={setCurrentPageHandler}
-                              currentPage={currentPage}/> : ''}
+            {totalPage > 1 ? <PaginationFooter lastPage={totalPage} currentPageHandler={setCurrentPageHandler}
+                                               currentPage={currentPage}/> : ''}
         </Box>
     );
 };

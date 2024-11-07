@@ -11,17 +11,14 @@ interface PaginationFooterProps {
 const PaginationFooter: React.FC<PaginationFooterProps> = ({lastPage, currentPageHandler, currentPage}) => {
 
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-        currentPageHandler(value)
+        currentPageHandler(value);
+        window.scrollTo(0, 0);
     };
 
     return (
         <Box
             component="footer"
             sx={{
-                position: 'fixed',
-                bottom: 0,
-                left: 0,
-                right: 0,
                 backgroundColor: 'darkgray',
                 color: 'white',
                 p: 2,

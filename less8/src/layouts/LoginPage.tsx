@@ -77,6 +77,12 @@ export default function LoginPage() {
                     >
                         Sign In
                     </Button>
+                    <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 2 }}>
+                        If you don't have an account,{' '}
+                        <Button color="primary" onClick={() => navigate('/register')}>
+                            click here
+                        </Button>
+                    </Typography>
                 </form>
             </div>
         </Container>

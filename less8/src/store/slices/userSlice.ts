@@ -3,10 +3,12 @@ import axios from "axios";
 import exp from "node:constants";
 import {RootState} from "../store";
 import axiosInstance from "../../api/axiosInstance";
+import {getUserInformation} from "../../api/userActions";
 
 const initialState = {
     isAuthenticated: !!localStorage.getItem('token'),
-    token: null
+    token: null,
+    username: ''
 }
 
 interface UserRegister {
@@ -23,9 +25,20 @@ export const login = createAsyncThunk(
             'password': payload.password
         })
 
-        console.log(responseLogin.data.access_token);
+        const responseUsername = await getUserInformation(responseLogin.data.access_token);
 
-        return responseLogin.data.access_token;
+        return {access_token: responseLogin.data.access_token, username: responseUsername.data.username};
+    }
+)
+
+
+export const checkUser = createAsyncThunk(
+    'user/checkUser',
+    async function (_, {rejectWithValue}) {
+
+        const responseUsername = await getUserInformation(String(initialState.token));
+
+        return responseUsername.data.username;
     }
 )
 
@@ -47,12 +60,19 @@ export const userSlice = createSlice({
         builder
             .addCase(login.fulfilled, (state, action) => {
                 state.isAuthenticated = true;
-                state.token = action.payload;
-                localStorage.setItem('token', action.payload);
+                console.log(action.payload);
+                state.token = action.payload.access_token;
+                state.username = action.payload.username;
+
+                localStorage.setItem('token', action.payload.access_token);
             })
             .addCase(login.rejected, (state, action) => {
                 state.isAuthenticated = false;
-            });
+            })
+            .addCase(checkUser.fulfilled, (state, action) => {
+                state.username = action.payload;
+            })
+        ;
     },
 })
 

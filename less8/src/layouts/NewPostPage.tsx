@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import React, {useState} from 'react';
+import {Box, Button, TextField, Typography} from '@mui/material';
 import {uploadExhibition} from "../api/exhibitActions";
 import {useNavigate} from "react-router-dom";
 import {setUrl} from "../store/slices/exhibitSlice";
@@ -25,7 +25,7 @@ const NewPostPage = () => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         if (image && description) {
-           await uploadExhibition(image, description);
+            await uploadExhibition(image, description);
             navigate('/')
             dispatch(setUrl({url: urlToRout.MY_EXHIBIT_URL}))
         } else {
@@ -37,9 +37,17 @@ const NewPostPage = () => {
         <Box
             component="form"
             onSubmit={handleSubmit}
-            sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, maxWidth: 500, mx: 'auto', mt: 5 }}
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 2,
+                maxWidth: 500,
+                mx: 'auto',
+                mt: 5
+            }}
         >
-            <Typography variant="h5" component="h1" sx={{ mb: 2 }}>
+            <Typography variant="h5" component="h1" sx={{mb: 2}}>
                 Створити новий пост
             </Typography>
 
@@ -56,10 +64,10 @@ const NewPostPage = () => {
             <Button
                 variant="contained"
                 component="label"
-                sx={{ width: '100%' }}
+                sx={{width: '100%'}}
             >
                 Завантажити зображення
-                <input type="file" hidden onChange={handleImageChange} accept="image/*" />
+                <input type="file" hidden onChange={handleImageChange} accept="image/*"/>
             </Button>
 
             {image && (

@@ -1,32 +1,44 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import Container from "@mui/material/Container";
-import { CssBaseline, TextField } from "@mui/material";
+import {CssBaseline, TextField} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { useDispatch } from "react-redux";
-import { login } from "../store/slices/userSlice";
-import { AppDispatch } from "../store/store";
+import {useDispatch} from "react-redux";
+import {login} from "../store/slices/userSlice";
+import {AppDispatch} from "../store/store";
 import {useAppDispatch} from "../hooks/hooks";
+import {register} from "../api/userActions";
+import {useNavigate} from "react-router-dom";
 
-export default function LoginPage() {
+export default function RegistrationPage() {
     const dispatch = useAppDispatch();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
-    function registerHandler(e: React.FormEvent) {
+    async function registerHandler(e: React.FormEvent) {
         e.preventDefault();
-        const user = { username, password };
-        console.log(user);
-        dispatch(login(user));
+        const user = {username, password};
+
+        try {
+            const response = await register(username, password);
+            if (response.status !== 400) {
+                dispatch(login(user));
+                navigate('/');
+            }
+        } catch (error) {
+            console.error( error);
+            console.error('Error during registration:', error);
+        }
     }
 
     return (
         <Container component="main" maxWidth="xs">
-            <CssBaseline />
+            <CssBaseline/>
             <div>
                 <Typography component="h1" variant="h5">
-                    Sign in
+                    Register
                 </Typography>
                 <form onSubmit={registerHandler} noValidate> {}
                     <TextField
@@ -39,7 +51,7 @@ export default function LoginPage() {
                         name="email"
                         autoComplete="email"
                         autoFocus
-                        value={username} // Прив'язка значення
+                        value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
                     <TextField
@@ -62,7 +74,7 @@ export default function LoginPage() {
                         variant="contained"
                         color="primary"
                     >
-                        Sign In
+                        Sign up
                     </Button>
                 </form>
             </div>

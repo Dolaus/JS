@@ -77,7 +77,7 @@ const NavBar = () => {
 
                     {!isAuthenticated ?
                         <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
-                            <Button color="inherit">Login</Button>
+                            <Button onClick={loginHandler} color="inherit">Login</Button>
                         </Box> : <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
                             <Button onClick={logoutHandler} color="inherit">Logout</Button>
                         </Box>}
