@@ -1,31 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import Box from "@mui/material/Box";
 import {Card, CardContent, Grid} from "@mui/material";
-import Typography from "@mui/material/Typography";
 import PaginationFooter from "./PaginationFooter";
-import {getUserInformation} from "../api/userActions";
-import Button from "@mui/material/Button";
 import {useSelector} from "react-redux";
 import {RootState} from "../store/store";
 import {useAppDispatch} from "../hooks/hooks";
 import {fetchExhibits} from "../store/slices/exhibitSlice";
 import {deleteExhibition} from "../api/exhibitActions";
-import CommentPage from "./CommentPage";
 import {checkUser} from "../store/slices/userSlice";
-
-interface IUser {
-    id: number;
-    username: string
-}
-
-interface IExhibition {
-    commentCount: number;
-    createdAt: Date;
-    description: string;
-    id: number;
-    imageUrl: string;
-    user: IUser
-}
+import PostItem from "./PostItem";
+import {IExhibition} from "../../interface/IExhibition";
 
 const HomePage = () => {
     const dispatch = useAppDispatch();
@@ -34,7 +18,6 @@ const HomePage = () => {
     const currentUser = useSelector((state: RootState) => state.user.username);
     const url = useSelector((state: RootState) => state.exhibit.url);
 
-    const staticUrl = 'http://ec2-13-49-67-34.eu-north-1.compute.amazonaws.com';
     const [exhibitions, setExhibitions] = useState([]);
     const [totalPage, setTotalPage] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
@@ -81,39 +64,9 @@ const HomePage = () => {
             <Grid container spacing={2} sx={{px: 10, py: 1}}>
                 {exhibitions.length > 0 ? (
                     exhibitions.map((exhibition: IExhibition, index: number) => (
-                        <Grid item xs={12} sm={12} md={12} key={index} style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            textAlign: 'center',
-                        }}>
-                            <Card style={{width: '100%', maxWidth: '700px'}}>
-                                <CardContent>
-                                    <CardContent sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        textAlign: 'center',
-                                    }}>
-                                        <img src={staticUrl + exhibition.imageUrl}
-                                             style={{width: '100%', maxWidth: '200px'}}/>
-                                    </CardContent>
-                                    <Typography variant="body2">
-                                        {exhibition.description}
-                                    </Typography>
-                                    <Button onClick={() => toggleComments(exhibition.id)}>
-                                        Comments
-                                    </Button>
-                                    {currentUser === exhibition.user.username ?
-                                        <Button onClick={() => deleteExhibitHandler(exhibition.id)}>
-
-                                            Delete
-                                        </Button> : ""}
-                                </CardContent>
-                                {selectedExhibitId === exhibition.id && <CommentPage id={exhibition.id}/>}
-
-                            </Card>
-                        </Grid>
+                        <PostItem deleteExhibitHandler={deleteExhibitHandler} exhibition={exhibition} key={index}
+                                  index={index} toggleComments={toggleComments} selectedExhibitId={selectedExhibitId}
+                                  currentUser={currentUser}/>
                     ))
                 ) : (
                     <p>No exhibitions found</p>
