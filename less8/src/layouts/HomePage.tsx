@@ -31,26 +31,17 @@ const HomePage = () => {
 
     const SOCKET_SERVER_URL =process.env.REACT_APP_STATICURL +'/notifications';
 
+    const socket = io(SOCKET_SERVER_URL, {
+        transports: ['websocket'],
+        autoConnect: true,
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        reconnectionAttempts: Infinity,
+    });
 
     useEffect(() => {
         dispatch(checkUser());
-
-        const socket = io(SOCKET_SERVER_URL, {
-            transports: ['websocket'],
-            autoConnect: true,
-            reconnection: true,
-            reconnectionDelay: 1000,
-            reconnectionDelayMax: 5000,
-            reconnectionAttempts: Infinity,
-        });
-
-        socket.on('newPost', (data) => {
-            if (currentPage === 1) {
-                dispatch(fetchExhibits({currentPage: currentPage, url: url}));
-            }
-            console.log(currentPage)
-            toast(`New Post from ${data.user}`);
-        });
 
         return () => {
             socket.disconnect();
@@ -73,7 +64,14 @@ const HomePage = () => {
     useEffect(() => {
         dispatch(fetchExhibits({currentPage: currentPage, url: url}));
         setExhibitions(exhibitsArray)
-        dispatch(setCurrentPageSlice(currentPage));
+
+        socket.on('newPost', (data) => {
+            if (currentPage === 1) {
+                dispatch(fetchExhibits({currentPage: currentPage, url: url}));
+            }
+            console.log(currentPage)
+            toast(`New Post from ${data.user}`);
+        });
     }, [currentPage]);
 
     const deleteExhibitHandler = async (id: number) => {

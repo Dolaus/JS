@@ -9,26 +9,31 @@ import {AppDispatch} from "../store/store";
 import {useAppDispatch} from "../hooks/hooks";
 import {register} from "../api/userActions";
 import {useNavigate} from "react-router-dom";
+import {ErrorMessage, Form, Formik} from "formik";
+import * as Yup from "yup";
+import {validationSchema} from "../validation/shemas";
+
+interface IRegister {
+    email: string,
+    password: string
+}
 
 export default function RegistrationPage() {
     const dispatch = useAppDispatch();
 
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    async function registerHandler(e: React.FormEvent) {
-        e.preventDefault();
-        const user = {username, password};
+    async function registerHandler(values: IRegister) {
+        const user = {username: values.email, password: values.password};
 
         try {
-            const response = await register(username, password);
+            const response = await register(values.email, values.password);
             if (response.status !== 400) {
                 dispatch(login(user));
                 navigate('/');
             }
         } catch (error) {
-            console.error( error);
+            console.error(error);
             console.error('Error during registration:', error);
         }
     }
@@ -40,43 +45,54 @@ export default function RegistrationPage() {
                 <Typography component="h1" variant="h5">
                     Register
                 </Typography>
-                <form onSubmit={registerHandler} noValidate> {}
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                        autoFocus
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Password"
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
-                        value={password} // Прив'язка значення
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+                <Formik initialValues={{email: "", password: ""}}
+                        validationSchema={validationSchema}
+                        onSubmit={registerHandler}>
+                    {({handleChange, values, touched, errors}) => (
 
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                    >
-                        Sign up
-                    </Button>
-                </form>
+                        <Form>
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="email"
+                                label="Email Address"
+                                name="email"
+                                autoComplete="email"
+                                autoFocus
+                                value={values.email}
+                                onChange={handleChange}
+                                error={touched.password && Boolean(errors.password)}
+                                helperText={<ErrorMessage name="password"/>}
+                            />
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="password"
+                                label="Password"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                                value={values.password}
+                                onChange={handleChange}
+                                error={touched.password && Boolean(errors.password)}
+                                helperText={<ErrorMessage name="password"/>}
+                            />
+
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                            >
+                                Sign up
+                            </Button>
+                        </Form>
+                    )}
+                </Formik>
             </div>
         </Container>
     );

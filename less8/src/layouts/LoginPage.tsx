@@ -1,29 +1,30 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect } from 'react';
 import Container from "@mui/material/Container";
 import { CssBaseline, TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import {useDispatch, useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 import { login } from "../store/slices/userSlice";
 import { RootState } from "../store/store";
-import {useAppDispatch} from "../hooks/hooks";
+import { useAppDispatch } from "../hooks/hooks";
 import { useNavigate } from 'react-router-dom';
+import { Form, Formik, Field, ErrorMessage } from "formik";
+import * as Yup from 'yup';
+import {validationSchema} from "../validation/shemas"; // Імпортуємо Yup
 
+interface ILogin {
+    email: string,
+    password: string
+}
 
 export default function LoginPage() {
     const dispatch = useAppDispatch();
-
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-
     const isToken = useSelector((state: RootState) => state.user.token);
     const navigate = useNavigate();
 
-    function loginHandler(e: React.FormEvent) {
-        e.preventDefault();
-
-        const user = { username, password };
-
+    function loginHandler(values: ILogin) {
+        const user = { username: values.email, password: values.password };
+        console.log(user);
         dispatch(login(user));
     }
 
@@ -33,7 +34,6 @@ export default function LoginPage() {
         }
     }, [isToken, navigate]);
 
-
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -41,49 +41,60 @@ export default function LoginPage() {
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
-                <form onSubmit={loginHandler} noValidate> {}
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                        autoFocus
-                        value={username} // Прив'язка значення
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Password"
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
-                        value={password} // Прив'язка значення
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                    >
-                        Sign In
-                    </Button>
-                    <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 2 }}>
-                        If you don't have an account,{' '}
-                        <Button color="primary" onClick={() => navigate('/register')}>
-                            click here
-                        </Button>
-                    </Typography>
-                </form>
+                <Formik
+                    initialValues={{ email: "", password: "" }}
+                    validationSchema={validationSchema}
+                    onSubmit={loginHandler}
+                >
+                    {({ handleChange, values, touched, errors }) => (
+                        <Form>
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="email"
+                                label="Email Address"
+                                name="email"
+                                autoComplete="email"
+                                autoFocus
+                                value={values.email}
+                                onChange={handleChange}
+                                error={touched.email && Boolean(errors.email)}
+                                helperText={<ErrorMessage name="email" />}
+                            />
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="password"
+                                label="Password"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                                value={values.password}
+                                onChange={handleChange}
+                                error={touched.password && Boolean(errors.password)}
+                                helperText={<ErrorMessage name="password" />}
+                            />
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                            >
+                                Sign In
+                            </Button>
+                            <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 2 }}>
+                                If you don't have an account,{' '}
+                                <Button color="primary" onClick={() => navigate('/register')}>
+                                    click here
+                                </Button>
+                            </Typography>
+                        </Form>
+                    )}
+                </Formik>
             </div>
         </Container>
     );
