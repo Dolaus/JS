@@ -35,6 +35,9 @@ export const exhibitSlice = createSlice({
             state.url = action.payload.url;
             console.log(action.payload.url)
         },
+        setCurrentPageSlice: (state, action) => {
+            state.currentPage = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchExhibits.fulfilled, (state, action) => {
@@ -45,5 +48,5 @@ export const exhibitSlice = createSlice({
     },
 })
 
-export const {setUrl} = exhibitSlice.actions;
+export const {setUrl, setCurrentPageSlice} = exhibitSlice.actions;
 export default exhibitSlice.reducer

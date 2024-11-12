@@ -5,11 +5,13 @@ import PaginationFooter from "./PaginationFooter";
 import {useSelector} from "react-redux";
 import {RootState} from "../store/store";
 import {useAppDispatch} from "../hooks/hooks";
-import {fetchExhibits} from "../store/slices/exhibitSlice";
+import {fetchExhibits, setCurrentPageSlice} from "../store/slices/exhibitSlice";
 import {deleteExhibition} from "../api/exhibitActions";
 import {checkUser} from "../store/slices/userSlice";
 import PostItem from "./PostItem";
 import {IExhibition} from "../../interface/IExhibition";
+import {io} from "socket.io-client";
+import {toast} from "react-toastify";
 
 const HomePage = () => {
     const dispatch = useAppDispatch();
@@ -27,8 +29,32 @@ const HomePage = () => {
         setCurrentPage(currentPage);
     }
 
+    const SOCKET_SERVER_URL =process.env.REACT_APP_STATICURL +'/notifications';
+
+
     useEffect(() => {
         dispatch(checkUser());
+
+        const socket = io(SOCKET_SERVER_URL, {
+            transports: ['websocket'],
+            autoConnect: true,
+            reconnection: true,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            reconnectionAttempts: Infinity,
+        });
+
+        socket.on('newPost', (data) => {
+            if (currentPage === 1) {
+                dispatch(fetchExhibits({currentPage: currentPage, url: url}));
+            }
+            console.log(currentPage)
+            toast(`New Post from ${data.user}`);
+        });
+
+        return () => {
+            socket.disconnect();
+        };
     }, []);
 
     useEffect(() => {
@@ -47,7 +73,7 @@ const HomePage = () => {
     useEffect(() => {
         dispatch(fetchExhibits({currentPage: currentPage, url: url}));
         setExhibitions(exhibitsArray)
-
+        dispatch(setCurrentPageSlice(currentPage));
     }, [currentPage]);
 
     const deleteExhibitHandler = async (id: number) => {

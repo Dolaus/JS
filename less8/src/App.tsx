@@ -9,10 +9,12 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import HomePage from "./layouts/HomePage";
 import NewPostPage from "./layouts/NewPostPage";
 import RegistrationPage from "./layouts/RegistrationPage";
+import {ToastContainer} from "react-toastify";
 
 function App() {
 
     return (
+
         <Provider store={store}>
             <Router>
                 <NavBar/>

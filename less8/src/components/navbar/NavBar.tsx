@@ -12,6 +12,8 @@ import {useAppDispatch} from "../../hooks/hooks";
 import {removeAuthenticate, removeToken} from "../../store/slices/userSlice";
 import {setUrl} from "../../store/slices/exhibitSlice";
 import {urlToRout} from "../../utils/url";
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const NavBar = () => {
 
@@ -82,6 +84,7 @@ const NavBar = () => {
                             <Button onClick={logoutHandler} color="inherit">Logout</Button>
                         </Box>}
                 </Toolbar>
+                <ToastContainer/>
             </Container>
         </AppBar>
     );
