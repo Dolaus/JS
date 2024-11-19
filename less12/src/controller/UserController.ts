@@ -1,7 +1,8 @@
-import {BadRequestError, Body, Controller, Delete, Get, Params, Patch, Post} from 'routing-controllers';
+import {BadRequestError, Body, Controller, Delete, Get, HttpError, Params, Patch, Post} from 'routing-controllers';
 import * as fs from "fs";
 import {IUser} from "../interface/IUser";
 import 'reflect-metadata';
+import {ValidateArgs} from "../decorators/validateDecorator";
 
 @Controller('/users')
 export class UserController {
@@ -11,7 +12,7 @@ export class UserController {
     @Get('/')
     getAuthor() {
         if (!fs.existsSync(this.PATH_TO_FILE)) {
-            throw new BadRequestError('File not found');
+            throw new HttpError(400, 'File not exist');
         }
         const data = fs.readFileSync(this.PATH_TO_FILE, {encoding: 'utf-8'});
 
@@ -19,7 +20,10 @@ export class UserController {
     }
 
     @Post('/')
+    @ValidateArgs(['user', 'email'])
     addNewUser(@Body() body: IUser) {
+        console.log(body);
+        return
         if (!fs.existsSync(this.PATH_TO_FILE)) {
             fs.writeFileSync(this.PATH_TO_FILE, JSON.stringify([]));
         }
@@ -37,15 +41,16 @@ export class UserController {
     }
 
     @Patch('/:id')
+    @ValidateArgs(['user', 'email'])
     updateUser(@Body() body: IUser, @Params() params: { id: string }) {
         if (!fs.existsSync(this.PATH_TO_FILE)) {
-            throw new BadRequestError('File not found');
+            throw new HttpError(400, 'File not exist');
         }
         const users = JSON.parse(fs.readFileSync(this.PATH_TO_FILE, {encoding: 'utf-8'}));
 
         const user = users.find((u: IUser) => u.id === +params.id);
         if (!user) {
-            throw new BadRequestError('User not found');
+            throw new HttpError(400, 'User not found');
         }
         user.user = body.user;
         user.email = body.email;
@@ -58,7 +63,7 @@ export class UserController {
     @Delete('/:id')
     deleteUser(@Params() params: { id: string }) {
         if (!fs.existsSync(this.PATH_TO_FILE)) {
-            throw new BadRequestError('File not found');
+            throw new HttpError(400, 'File not exist');
         }
 
         const users = JSON.parse(fs.readFileSync(this.PATH_TO_FILE, {encoding: 'utf-8'}))
