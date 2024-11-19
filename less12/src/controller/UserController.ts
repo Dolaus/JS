@@ -22,8 +22,6 @@ export class UserController {
     @Post('/')
     @ValidateArgs(['user', 'email'])
     addNewUser(@Body() body: IUser) {
-        console.log(body);
-        return
         if (!fs.existsSync(this.PATH_TO_FILE)) {
             fs.writeFileSync(this.PATH_TO_FILE, JSON.stringify([]));
         }
