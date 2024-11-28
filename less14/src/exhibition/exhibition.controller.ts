@@ -14,11 +14,15 @@ import {ExhibitionService} from './exhibition.service';
 import {extname} from 'path';
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 import * as fs from "fs";
+import {ExhibitionGateway} from "./exhibition.gateway";
 
 @ApiTags('Виставка')
 @Controller('exhibitions')
 export class ExhibitionController {
-    constructor(private readonly exhibitionService: ExhibitionService) {
+    constructor(
+        private readonly exhibitionService: ExhibitionService,
+        private readonly exhibitionGateway: ExhibitionGateway,
+    ) {
     }
 
     @Get()
@@ -63,7 +67,11 @@ export class ExhibitionController {
     ): Promise<Exhibition> {
         const user = req.user;
         console.log(user);
-        return this.exhibitionService.create(createExhibitionDto, file.filename, user);
+        const post = await this.exhibitionService.create(createExhibitionDto, file.filename, user);
+
+        this.exhibitionGateway.notifyNewPost(user.id, post);
+
+        return post;
     }
 
 
