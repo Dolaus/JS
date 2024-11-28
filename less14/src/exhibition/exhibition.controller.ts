@@ -41,15 +41,15 @@ export class ExhibitionController {
     @UseGuards(JwtAuthGuard)
     @Post()
     @ApiBearerAuth('access-token')
-    @ApiOperation({summary: 'Створення нового експоната'})
-    @ApiResponse({status: 201, description: 'Експонат успішно створений'})
+    @ApiOperation({ summary: 'Створення нового експоната' })
+    @ApiResponse({ status: 201, description: 'Експонат успішно створений' })
     @ApiConsumes('multipart/form-data')
     @ApiBody({
         schema: {
             type: 'object',
             properties: {
-                image: {type: 'string', format: 'binary'},
-                description: {type: 'string'},
+                image: { type: 'string', format: 'binary' },
+                description: { type: 'string' },
             },
         },
     })
@@ -71,7 +71,9 @@ export class ExhibitionController {
         @Req() req: any,
     ): Promise<Exhibition> {
         const user = req.user;
-        console.log(user);
+
+        createExhibitionDto.image = file;
+
         const post = await this.exhibitionService.create(createExhibitionDto, file.filename, user);
 
         this.exhibitionGateway.notifyNewPost(user.id, post);
