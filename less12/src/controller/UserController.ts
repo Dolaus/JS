@@ -6,7 +6,7 @@ import {
     Controller,
     Delete,
     Get,
-    HttpError,
+    HttpError, NotFoundError,
     Params,
     Patch,
     Post
@@ -40,7 +40,7 @@ export class UserController {
         const user = await this.userRepository.findOne({ where: { id: +params.id } });
 
         if (!user) {
-            throw new HttpError(400, 'User not found');
+            throw new NotFoundError();
         }
 
         user.user = body.user;
@@ -56,7 +56,7 @@ export class UserController {
         const user = await this.userRepository.findOne({ where: { id: +params.id } });
 
         if (!user) {
-            throw new HttpError(400, 'User not found');
+            throw new NotFoundError();
         }
 
         await this.userRepository.remove(user);
