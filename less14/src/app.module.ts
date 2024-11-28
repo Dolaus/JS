@@ -2,6 +2,11 @@ import { Module } from '@nestjs/common';
 import {TypeOrmModule} from "@nestjs/typeorm";
 import { UserModule } from './user/user.module';
 import {User} from "./user/user.entity";
+import { AuthModule } from './auth/auth.module';
+import { ExhibitionModule } from './exhibition/exhibition.module';
+import {Exhibition} from "./exhibition/exhibition.entity";
+import { CommentModule } from './comment/comment.module';
+import { Comment } from './comment/comment.entity';
 
 
 @Module({
@@ -12,9 +17,9 @@ import {User} from "./user/user.entity";
     username: 'postgres',
     password: '1212',
     database: 'shedulers',
-    entities: [User],
+    entities: [User, Exhibition, Comment],
     synchronize: false,
-  }), UserModule],
+  }), UserModule, AuthModule, ExhibitionModule, CommentModule],
   controllers: [],
   providers: [],
 })

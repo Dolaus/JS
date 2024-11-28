@@ -1,8 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-// import { Exhibit } from '../exhibits/exhibit.entity';
-// import { Comment } from '../comments/comment.entity';
 import { Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import {Exhibition} from "../exhibition/exhibition.entity";
+import { Comment } from '../comment/comment.entity';
 
 @Entity('users')
 export class User {
@@ -20,16 +20,16 @@ export class User {
     @ApiProperty({ example: 'hashedPassword', description: 'Хешированный пароль пользователя' })
     password: string;
 
-    // @OneToMany(() => Exhibit, (exhibit) => exhibit.user, { cascade: true })
-    // @ApiProperty({
-    //     type: () => [Exhibit],
-    //     description: 'Список экспонатов, добавленных пользователем',
-    // })
-    // exhibits: Exhibit[];
+    @OneToMany(() => Exhibition, (exhibition) => exhibition.user, { cascade: true })
+    @ApiProperty({
+        type: () => [Exhibition],
+        description: 'Список экспонатов, добавленных пользователем',
+    })
+    exhibitions: Exhibition[];
 
     @Column({ default: false })
     isAdmin: boolean;
 
-    // @OneToMany(() => Comment, (comment) => comment.user)
-    // comments: Comment[];
+    @OneToMany(() => Comment, (comment) => comment.user)
+    comments: Comment[];
 }
