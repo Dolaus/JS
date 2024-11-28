@@ -1,74 +1,66 @@
-import {BadRequestError, Body, Controller, Delete, Get, HttpError, Params, Patch, Post} from 'routing-controllers';
-import * as fs from "fs";
-import {IUser} from "../interface/IUser";
-import 'reflect-metadata';
-import {ValidateArgs} from "../decorators/validateDecorator";
+import "reflect-metadata";
+
+import {
+    BadRequestError,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpError,
+    Params,
+    Patch,
+    Post
+} from 'routing-controllers';
+import { User } from '../entity/User';
+import { ValidateArgs } from '../decorators/validateDecorator';
+import { AppDataSource } from '../data-source/data-source';
 
 @Controller('/users')
 export class UserController {
-
-    private PATH_TO_FILE = './files/users.json';
+    private userRepository = AppDataSource.getRepository(User);
 
     @Get('/')
-    getAuthor() {
-        if (!fs.existsSync(this.PATH_TO_FILE)) {
-            throw new HttpError(400, 'File not exist');
-        }
-        const data = fs.readFileSync(this.PATH_TO_FILE, {encoding: 'utf-8'});
-
-        return {data: data}
+    async getUsers() {
+        const users = await this.userRepository.find();
+        return { data: users };
     }
 
     @Post('/')
     @ValidateArgs(['user', 'email'])
-    addNewUser(@Body() body: IUser) {
-        if (!fs.existsSync(this.PATH_TO_FILE)) {
-            fs.writeFileSync(this.PATH_TO_FILE, JSON.stringify([]));
-        }
+    async addNewUser(@Body() body: { user: string; email: string }) {
+        const newUser = this.userRepository.create(body);
+        await this.userRepository.save(newUser);
 
-        const users: IUser[] = JSON.parse(fs.readFileSync(this.PATH_TO_FILE, {encoding: 'utf-8'}));
-        const lastId = users.sort((u1: IUser, u2: IUser) => u1.id - u2.id).at(-1)?.id || 0;
-
-        const newUser = {id: lastId + 1, user: body.user, email: body.email};
-
-        users.push(newUser);
-
-        fs.writeFileSync(this.PATH_TO_FILE, JSON.stringify(users));
-
-        return {message: "Create successfully"}
+        return { message: 'User created successfully', data: newUser };
     }
 
     @Patch('/:id')
     @ValidateArgs(['user', 'email'])
-    updateUser(@Body() body: IUser, @Params() params: { id: string }) {
-        if (!fs.existsSync(this.PATH_TO_FILE)) {
-            throw new HttpError(400, 'File not exist');
-        }
-        const users = JSON.parse(fs.readFileSync(this.PATH_TO_FILE, {encoding: 'utf-8'}));
+    async updateUser(@Body() body: { user: string; email: string }, @Params() params: { id: string }) {
+        const user = await this.userRepository.findOne({ where: { id: +params.id } });
 
-        const user = users.find((u: IUser) => u.id === +params.id);
         if (!user) {
             throw new HttpError(400, 'User not found');
         }
+
         user.user = body.user;
         user.email = body.email;
 
-        fs.writeFileSync(this.PATH_TO_FILE, JSON.stringify(users));
+        await this.userRepository.save(user);
 
-        return {message: "Updated successfully"}
+        return { message: 'User updated successfully', data: user };
     }
 
     @Delete('/:id')
-    deleteUser(@Params() params: { id: string }) {
-        if (!fs.existsSync(this.PATH_TO_FILE)) {
-            throw new HttpError(400, 'File not exist');
+    async deleteUser(@Params() params: { id: string }) {
+        const user = await this.userRepository.findOne({ where: { id: +params.id } });
+
+        if (!user) {
+            throw new HttpError(400, 'User not found');
         }
 
-        const users = JSON.parse(fs.readFileSync(this.PATH_TO_FILE, {encoding: 'utf-8'}))
-            .filter((u: IUser) => u.id !== +params?.id);
+        await this.userRepository.remove(user);
 
-        fs.writeFileSync(this.PATH_TO_FILE, JSON.stringify(users));
-
-        return {message: 'Deleted successfully'};
+        return { message: 'User deleted successfully' };
     }
 }

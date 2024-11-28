@@ -1,22 +1,32 @@
-import {useExpressServer} from "routing-controllers";
-import {UserController} from "./controller/UserController";
+import "reflect-metadata";
 import dotenv from "dotenv";
+import {AppDataSource} from "./data-source/data-source";
+import {useExpressServer} from "routing-controllers";
 import express from "express";
 import bodyParser from "body-parser";
+import {UserController} from "./controller/UserController";
 
-dotenv.config()
+dotenv.config();
 
 const app = express();
 
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
-useExpressServer(app, {
-    controllers: [UserController]
-})
+AppDataSource.initialize()
+    .then(() => {
+        console.log("Data Source has been initialized!");
 
-const port = process.env.PORT || 3000;
+        useExpressServer(app, {
+            controllers: [UserController],
+        });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
+        const port = process.env.PORT || 3000;
+
+        app.listen(port, () => {
+            console.log(`Server running at http://localhost:${port}`);
+        });
+    })
+    .catch((err) => {
+        console.error("Error during Data Source initialization:", err);
+    });
