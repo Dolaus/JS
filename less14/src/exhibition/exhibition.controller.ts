@@ -3,9 +3,9 @@ import {
     Post,
     Body,
     UseInterceptors,
-    UploadedFile, Req, UseGuards, Get, NotFoundException, Param, Delete, Res,
+    UploadedFile, Req, UseGuards, Get, NotFoundException, Param, Delete, Res, Query,
 } from '@nestjs/common';
-import {ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
+import {ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiResponse, ApiTags} from '@nestjs/swagger';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {diskStorage} from 'multer';
 import {Exhibition} from './exhibition.entity';
@@ -26,10 +26,15 @@ export class ExhibitionController {
     }
 
     @Get()
-    @ApiOperation({summary: 'Перегляд усіх експонатів'})
-    @ApiResponse({status: 200, description: 'Список усіх експонатів'})
-    async getAll() {
-        return this.exhibitionService.findAll();
+    @ApiOperation({ summary: 'Перегляд усіх експонатів' })
+    @ApiQuery({ name: 'page', required: false, description: 'Номер сторінки для пагінації', example: 1 })
+    @ApiQuery({ name: 'limit', required: false, description: 'Кількість записів на сторінці', example: 10 })
+    @ApiResponse({ status: 200, description: 'Список усіх експонатів' })
+    async getAll(
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 10,
+    ) {
+        return this.exhibitionService.findAllWithPagination(page, limit);
     }
 
 

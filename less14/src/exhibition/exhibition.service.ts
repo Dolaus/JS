@@ -47,4 +47,36 @@ export class ExhibitionService {
         return true;
     }
 
+    async findAllWithPagination(page: number, limit: number) {
+        const offset = (page - 1) * limit;
+
+        const [data, total] = await this.exhibitionRepository.findAndCount({
+            relations: ['user', 'comments'],
+            skip: offset,
+            take: limit,
+        });
+
+        console.log(data);
+
+        const formattedData = data.map((exhibition) => ({
+            id: exhibition.id,
+            imageUrl: `/static/${exhibition.image}`,
+            description: exhibition.description,
+            user: exhibition.user
+                ? {
+                    id: exhibition.user.id,
+                    username: exhibition.user.username,
+                }
+                : null,
+            commentCount: exhibition.comments.length,
+        }));
+
+        return {
+            data: formattedData,
+            total,
+            page,
+            lastPage: Math.ceil(total / limit),
+        };
+    }
+
 }
