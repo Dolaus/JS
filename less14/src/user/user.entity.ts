@@ -4,7 +4,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity()
+@Entity('users')
 export class User {
     @Expose()
     @PrimaryGeneratedColumn()

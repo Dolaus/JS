@@ -14,7 +14,7 @@ import {User} from "./user/user.entity";
     database: 'shedulers',
     entities: [User],
     synchronize: false,
-  }), UserModule,],
+  }), UserModule],
   controllers: [],
   providers: [],
 })
