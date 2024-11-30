@@ -1,17 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import {Card, CardContent, Grid} from "@mui/material";
+import { Grid } from "@mui/material";
 import PaginationFooter from "./PaginationFooter";
-import {useSelector} from "react-redux";
-import {RootState} from "../store/store";
-import {useAppDispatch} from "../hooks/hooks";
-import {fetchExhibits, setCurrentPageSlice} from "../store/slices/exhibitSlice";
-import {deleteExhibition} from "../api/exhibitActions";
-import {checkUser} from "../store/slices/userSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { useAppDispatch } from "../hooks/hooks";
+import { fetchExhibits } from "../store/slices/exhibitSlice";
+import { deleteExhibition } from "../api/exhibitActions";
+import { checkUser } from "../store/slices/userSlice";
 import PostItem from "./PostItem";
-import {IExhibition} from "../../interface/IExhibition";
-import {io} from "socket.io-client";
-import {toast} from "react-toastify";
+import { IExhibition } from "../../interface/IExhibition";
+import useSocket from "../hooks/useSocket";
 
 const HomePage = () => {
     const dispatch = useAppDispatch();
@@ -27,77 +26,66 @@ const HomePage = () => {
 
     const setCurrentPageHandler = (currentPage: number) => {
         setCurrentPage(currentPage);
-    }
+    };
 
-    const SOCKET_SERVER_URL =process.env.REACT_APP_STATICURL +'/notifications';
-
-    const socket = io(SOCKET_SERVER_URL, {
-        transports: ['websocket'],
-        autoConnect: true,
-        reconnection: true,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
-        reconnectionAttempts: Infinity,
+    useSocket(currentPage, url, () => {
+        dispatch(fetchExhibits({ currentPage, url }));
     });
 
     useEffect(() => {
         dispatch(checkUser());
-
-        return () => {
-            socket.disconnect();
-        };
     }, []);
 
     useEffect(() => {
         setSelectedExhibitId(null);
-        dispatch(fetchExhibits({currentPage: 1, url: url}));
+        dispatch(fetchExhibits({ currentPage: 1, url }));
 
-        setExhibitions(exhibitsArray)
-        setCurrentPage(1)
+        setExhibitions(exhibitsArray);
+        setCurrentPage(1);
     }, [url]);
 
     useEffect(() => {
-        setExhibitions(exhibitsArray)
+        setExhibitions(exhibitsArray);
         setTotalPage(totalPageFromExhibitSlice);
     }, [exhibitsArray]);
 
     useEffect(() => {
-        dispatch(fetchExhibits({currentPage: currentPage, url: url}));
-        setExhibitions(exhibitsArray)
-
-        socket.on('newPost', (data) => {
-            if (currentPage === 1) {
-                dispatch(fetchExhibits({currentPage: currentPage, url: url}));
-            }
-            console.log(currentPage)
-            toast(`New Post from ${data.user}`);
-        });
+        dispatch(fetchExhibits({ currentPage, url }));
     }, [currentPage]);
 
     const deleteExhibitHandler = async (id: number) => {
         await deleteExhibition(id);
-        dispatch(fetchExhibits({currentPage: currentPage, url: url}));
-    }
+        dispatch(fetchExhibits({ currentPage, url }));
+    };
 
     const toggleComments = (id: number) => {
         setSelectedExhibitId(selectedExhibitId === id ? null : id);
     };
 
     return (
-        <Box sx={{flexGrow: 1}}>
-            <Grid container spacing={2} sx={{px: 10, py: 1}}>
+        <Box sx={{ flexGrow: 1 }}>
+            <Grid container spacing={2} sx={{ px: 10, py: 1 }}>
                 {exhibitions.length > 0 ? (
                     exhibitions.map((exhibition: IExhibition, index: number) => (
-                        <PostItem deleteExhibitHandler={deleteExhibitHandler} exhibition={exhibition} key={index}
-                                  index={index} toggleComments={toggleComments} selectedExhibitId={selectedExhibitId}
-                                  currentUser={currentUser}/>
+                        <PostItem
+                            deleteExhibitHandler={deleteExhibitHandler}
+                            exhibition={exhibition}
+                            key={index}
+                            index={index}
+                            toggleComments={toggleComments}
+                            selectedExhibitId={selectedExhibitId}
+                            currentUser={currentUser}
+                        />
                     ))
                 ) : (
                     <p>No exhibitions found</p>
                 )}
             </Grid>
-            {totalPage > 1 ? <PaginationFooter lastPage={totalPage} currentPageHandler={setCurrentPageHandler}
-                                               currentPage={currentPage}/> : ''}
+            {totalPage > 1 ? (
+                <PaginationFooter lastPage={totalPage} currentPageHandler={setCurrentPageHandler} currentPage={currentPage} />
+            ) : (
+                ""
+            )}
         </Box>
     );
 };
